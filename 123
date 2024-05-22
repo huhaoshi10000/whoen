@@ -2,29 +2,32 @@ package nl.mendesgans.is.util;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 public class HmacUtil {
 
-    private HmacUtil(){}
+    // Private constructor to prevent instantiation
+    private HmacUtil() {}
+
+    /**
+     * Generates an HMAC hash using the specified algorithm, data, and key.
+     *
+     * @param algorithm the name of the algorithm (e.g., HmacSHA256)
+     * @param data      the data to be hashed
+     * @param key       the secret key used for hashing
+     * @return the hexadecimal representation of the HMAC hash
+     * @throws NoSuchAlgorithmException if the specified algorithm is not available
+     * @throws InvalidKeyException      if the given key is inappropriate for initializing the MAC
+     */
     public static String hmacHash(String algorithm, String data, String key)
             throws NoSuchAlgorithmException, InvalidKeyException {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), algorithm);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), algorithm);
         Mac mac = Mac.getInstance(algorithm);
         mac.init(secretKeySpec);
-        return bytesToHex(mac.doFinal(data.getBytes()));
-    }
-
-    public static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte hashByte : bytes) {
-            int intVal = 0xff & hashByte;
-            if (intVal < 0x10) {
-                sb.append('0');
-            }
-            sb.append(Integer.toHexString(intVal));
-        }
-        return sb.toString();
+        byte[] hashBytes = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+        return HexFormat.of().formatHex(hashBytes);
     }
 }
