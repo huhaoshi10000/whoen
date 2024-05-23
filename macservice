@@ -1,0 +1,51 @@
+package nl.mendesgans.is.service;
+
+import nl.mendesgans.is.common.IntsEnvironment;
+import nl.mendesgans.is.util.HmacUtil;
+
+public class MacService {
+
+    private static final String HMAC_KEY_A = "hmacKeyA";
+    private static final String HMAC_KEY_B = "hmacKeyB";
+
+    private final IntsEnvironment intsEnvironment;
+
+    public MacService(IntsEnvironment intsEnvironment) {
+        this.intsEnvironment = intsEnvironment;
+    }
+
+    public MacResult generateMac(String data) {
+        String keyA = intsEnvironment.getProperty(HMAC_KEY_A);
+        String keyB = intsEnvironment.getProperty(HMAC_KEY_B);
+
+        if (keyA == null || keyB == null) {
+            throw new IllegalStateException("HMAC keys are not available in the environment");
+        }
+
+        try {
+            String macA = HmacUtil.hmacHash("HmacSHA256", data, keyA);
+            String macB = HmacUtil.hmacHash("HmacSHA256", data, keyB);
+            return new MacResult(macA, macB);
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating MAC", e);
+        }
+    }
+
+    public static class MacResult {
+        private final String macA;
+        private final String macB;
+
+        public MacResult(String macA, String macB) {
+            this.macA = macA;
+            this.macB = macB;
+        }
+
+        public String getMacA() {
+            return macA;
+        }
+
+        public String getMacB() {
+            return macB;
+        }
+    }
+}
