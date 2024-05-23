@@ -1,46 +1,99 @@
-package nl.mendesgans.is.util;
+package nl.mendesgans.is.common;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import nl.mendesgans.is.security.PropertyValueEncryptionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.jasypt.encryption.StringEncryptor;
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
-public class HmacUtil {
+import java.util.Objects;
 
-    // Private constructor to prevent instantiation
-    private HmacUtil() {}
+/**
+ * Utility class which logs property access. Delegates to the constructor injected and by spring create environment dependant
+ * on the container on which it runs.
+ */
+public class IntsEnvironment {
+    public static final String ENVKEY_INTS_CONFIG_DIR = "is_service_config_dir";
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntsEnvironment.class);
+    private final Environment environment;
+    private final StringEncryptor stringEncryptor;
 
-    /**
-     * Generates an HMAC hash using the specified algorithm, data, and key.
-     *
-     * @param algorithm the name of the algorithm (e.g., HmacSHA256)
-     * @param data      the data to be hashed
-     * @param key       the secret key used for hashing
-     * @return the hexadecimal representation of the HMAC hash
-     * @throws NoSuchAlgorithmException if the specified algorithm is not available
-     * @throws InvalidKeyException      if the given key is inappropriate for initializing the MAC
-     */
-    public static String hmacHash(String algorithm, String data, String key)
-            throws NoSuchAlgorithmException, InvalidKeyException {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), algorithm);
-        Mac mac = Mac.getInstance(algorithm);
-        mac.init(secretKeySpec);
-        byte[] hashBytes = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-        return bytesToHex(hashBytes);
+    public IntsEnvironment(final Environment environment) {
+        this(environment, null);
+    }
+
+    public IntsEnvironment(final Environment environment, StringEncryptor stringEncryptor) {
+        this.environment = environment;
+        this.stringEncryptor = stringEncryptor;
+        if (this.stringEncryptor == null) {
+            LOGGER.info("No {} is available.", StringEncryptor.class.getName());
+        } else {
+            LOGGER.info("A {} is available.", StringEncryptor.class.getName());
+        }
+    }
+
+    public String getProperty(final String key) {
+        return this.getProperty(key, null);
+    }
+
+    public String getProperty(final String key, final String defaultValue) {
+        final String value;
+
+        if (environment.containsProperty(key)) {
+            value = fetchAndDecryptIfRequired(key);
+            logEnvValue(key, value, false);
+        } else {
+            if (StringUtils.isEmpty(defaultValue)) {
+                LOGGER.warn("Could not find value for key {} and no default value was provided.", key);
+            }
+            value = defaultValue;
+            logEnvValue(key, value, true);
+        }
+        return value;
     }
 
     /**
-     * Converts a byte array to a hexadecimal string.
-     *
-     * @param bytes the byte array to be converted
-     * @return the hexadecimal representation of the byte array
+     * Environment properties should already be decrypted.
+     * However, this is not the case.
+     * TODO: Find out why properties are not decrypted automatically.
+     * Refer to other projects, and:
+     * https://confluence.bmg.intranet/display/SDT/Decrypting+properties+on+the+fly+made+easy
      */
-    public static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
+    private String fetchAndDecryptIfRequired(String key) {
+        String rawValue = environment.getRequiredProperty(key);
+        final String value;
+        if (PropertyValueEncryptionUtils.isEncryptedValue(rawValue)) {
+            value = decrypt(key, rawValue);
+        } else {
+            value = rawValue;
         }
-        return sb.toString();
+        return value;
+    }
+
+    private String decrypt(String key, String encryptedValue) {
+        try {
+            LOGGER.info("Property {} is encrypted. Decrypting...", key);
+            return PropertyValueEncryptionUtils.decrypt(encryptedValue, Objects.requireNonNull(stringEncryptor, "Decryption is required but no StringEncryptor is available."));
+        } catch (EncryptionOperationNotPossibleException e) {
+            String msg = "Could not decrypt value for key '" + key + "': " + e.getMessage();
+            LOGGER.error(msg, e);
+            throw new IllegalStateException(msg, e);
+        }
+    }
+
+    public int getPropertyAsInt(final String key, final String defaultValue) {
+        final String property = this.getProperty(key, defaultValue);
+        return Integer.parseInt(property);
+    }
+
+    private void logEnvValue(final String key, final String value, final boolean isDefault) {
+        if (!key.toLowerCase()
+                .contains("password")) {
+            LOGGER.info("{}='{}' {}", key, value, isDefault ? "(default)" : "");
+        } else {
+            LOGGER.info("{}='{}' {}", key, "*******", isDefault ? "(default)" : "");
+        }
     }
 }
