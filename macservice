@@ -1,51 +1,91 @@
 package nl.mendesgans.is.service;
 
 import nl.mendesgans.is.common.IntsEnvironment;
+import nl.mendesgans.is.service.MacService.MacResult;
 import nl.mendesgans.is.util.HmacUtil;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-public class MacService {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-    private static final String HMAC_KEY_A = "hmacKeyA";
-    private static final String HMAC_KEY_B = "hmacKeyB";
+class MacServiceTest {
 
-    private final IntsEnvironment intsEnvironment;
+    private IntsEnvironment intsEnvironment;
+    private MacService macService;
 
-    public MacService(IntsEnvironment intsEnvironment) {
-        this.intsEnvironment = intsEnvironment;
+    @BeforeEach
+    void setUp() {
+        intsEnvironment = mock(IntsEnvironment.class);
+        macService = new MacService(intsEnvironment);
     }
 
-    public MacResult generateMac(String data) {
-        String keyA = intsEnvironment.getProperty(HMAC_KEY_A);
-        String keyB = intsEnvironment.getProperty(HMAC_KEY_B);
+    @Test
+    void generateMac_shouldReturnMacResults() throws Exception {
+        // Arrange
+        String data = "testData";
+        String keyA = "keyA";
+        String keyB = "keyB";
+        String expectedMacA = HmacUtil.hmacHash("HmacSHA256", data, keyA);
+        String expectedMacB = HmacUtil.hmacHash("HmacSHA256", data, keyB);
 
-        if (keyA == null || keyB == null) {
-            throw new IllegalStateException("HMAC keys are not available in the environment");
-        }
+        when(intsEnvironment.getProperty("hmacKeyA")).thenReturn(keyA);
+        when(intsEnvironment.getProperty("hmacKeyB")).thenReturn(keyB);
 
-        try {
-            String macA = HmacUtil.hmacHash("HmacSHA256", data, keyA);
-            String macB = HmacUtil.hmacHash("HmacSHA256", data, keyB);
-            return new MacResult(macA, macB);
-        } catch (Exception e) {
-            throw new RuntimeException("Error generating MAC", e);
-        }
+        // Act
+        MacResult result = macService.generateMac(data);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedMacA, result.getMacA());
+        assertEquals(expectedMacB, result.getMacB());
+
+        // Verify that the getProperty method was called with the correct keys
+        verify(intsEnvironment).getProperty("hmacKeyA");
+        verify(intsEnvironment).getProperty("hmacKeyB");
     }
 
-    public static class MacResult {
-        private final String macA;
-        private final String macB;
+    @Test
+    void generateMac_shouldThrowExceptionWhenKeyIsMissing() {
+        // Arrange
+        String data = "testData";
 
-        public MacResult(String macA, String macB) {
-            this.macA = macA;
-            this.macB = macB;
-        }
+        when(intsEnvironment.getProperty("hmacKeyA")).thenReturn(null);
+        when(intsEnvironment.getProperty("hmacKeyB")).thenReturn("keyB");
 
-        public String getMacA() {
-            return macA;
-        }
+        // Act & Assert
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            macService.generateMac(data);
+        });
 
-        public String getMacB() {
-            return macB;
-        }
+        assertEquals("HMAC keys are not available in the environment", exception.getMessage());
+
+        // Verify that the getProperty method was called with the correct keys
+        verify(intsEnvironment).getProperty("hmacKeyA");
+        verify(intsEnvironment).getProperty("hmacKeyB");
+    }
+
+    @Test
+    void generateMac_shouldThrowRuntimeExceptionWhenErrorOccurs() throws Exception {
+        // Arrange
+        String data = "testData";
+        String keyA = "keyA";
+        String keyB = "keyB";
+
+        when(intsEnvironment.getProperty("hmacKeyA")).thenReturn(keyA);
+        when(intsEnvironment.getProperty("hmacKeyB")).thenReturn(keyB);
+        doThrow(new RuntimeException("Mocked exception")).when(intsEnvironment).getProperty("hmacKeyA");
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            macService.generateMac(data);
+        });
+
+        assertEquals("Error generating MAC", exception.getMessage().substring(0, 19));
+
+        // Verify that the getProperty method was called with the correct keys
+        verify(intsEnvironment).getProperty("hmacKeyA");
+        verify(intsEnvironment).getProperty("hmacKeyB");
     }
 }
