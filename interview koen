@@ -1,0 +1,44 @@
+Here are some interview questions tailored for a software developer who recently graduated and has the experience described in the provided image:
+
+### Technical Questions:
+1. **Project Management:**
+   - Can you walk me through the process you followed to refactor and restructure the Van Remmen portal? What challenges did you encounter, and how did you overcome them?
+
+2. **Web Development:**
+   - Describe how you integrated Django with AWS for file storage and AngularJS for frontend processing in the Van Remmen portal. What were the key considerations you had to keep in mind?
+   - How did you use MQTT to communicate with UV controllers in the field? Can you explain the importance of this communication method in your project?
+
+3. **Tool Development:**
+   - Can you explain the differences between the first and second versions of the Van Remmen Config Editor? What specific user feedback led to the changes implemented in the second version?
+   - Why did you choose Google Protobuf for the configuration files in the first version of the Van Remmen Config Editor? What are its advantages?
+
+4. **Programming Languages and Frameworks:**
+   - What was the rationale behind switching from Python and PyQT to TypeScript and Electron for the second version of the Van Remmen Config Editor?
+   - Can you explain how you used electron-vite to compile the source code into V8 bytecode?
+
+5. **Problem-Solving:**
+   - As the only software developer at Van Remmen UV Technology, how do you prioritize tasks and make decisions regarding projects?
+   - Describe a time when you had to debug a complex issue in one of your projects. How did you approach it, and what was the outcome?
+
+### Behavioral Questions:
+1. **Team Collaboration:**
+   - As a member of the ING Intern Board, how did you facilitate connections among interns and what impact did this have on your team dynamics?
+   - Can you describe a situation where you had to collaborate with other departments or teams? How did you ensure effective communication and collaboration?
+
+2. **Learning and Adaptability:**
+   - How did you go about researching and implementing LLMs to aid new developers in understanding a new codebase? What was the outcome of this implementation?
+   - Can you give an example of a new technology or tool you had to learn quickly for a project? How did you manage your learning process?
+
+3. **Leadership and Initiative:**
+   - How did you handle being the only software developer at Van Remmen UV Technology? What strategies did you use to manage your workload and ensure project success?
+   - Describe a time when you identified a need for improvement in a process or project. What steps did you take to address this need?
+
+### Scenario-Based Questions:
+1. **Scenario:**
+   - Suppose you need to integrate a new feature into the Van Remmen portal that requires significant changes to the existing codebase. How would you plan and execute this integration to minimize disruption to current users?
+   - Imagine a critical bug is reported in the Van Remmen Config Editor, and it's affecting production. How would you prioritize and address this issue, considering you are the sole developer?
+
+2. **Scenario:**
+   - You are tasked with conducting a user study to test the effectiveness of the LLM tool you implemented at ING. How would you design this study, and what metrics would you use to measure success?
+
+These questions aim to assess both technical proficiency and soft skills, ensuring a comprehensive evaluation of the candidate's capabilities and experiences.
