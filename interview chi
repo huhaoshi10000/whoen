@@ -1,0 +1,45 @@
+Based on the resume provided, here are some tailored interview questions for the candidate:
+
+### Technical Questions:
+1. **Programming Languages:**
+   - You have experience with multiple programming languages, including C#, C++, Python, and JavaScript. Can you describe a project where you had to use more than one of these languages, and explain how you managed the integration between them?
+
+2. **Frameworks and Dev Tools:**
+   - How have you utilized React and .NET in your projects? Can you provide specific examples of challenges you faced and how you addressed them using these frameworks?
+   - Can you discuss a time when you used Azure DevOps to manage a project? What specific features of Azure DevOps did you find most useful?
+
+3. **Database Management:**
+   - Describe your experience with SQL and MySQL databases. Can you provide an example of a complex query or database design you worked on?
+
+4. **Project Management and Agile:**
+   - How do you ensure that your projects stay on track when working with Agile methodologies? Can you provide an example from your experience at Cadent Gas Ltd or Microsoft - NHS?
+   - Can you describe a situation where you had to lead a team through a particularly challenging project phase? How did you keep the team motivated and focused?
+
+5. **Web Development:**
+   - Explain how you developed and maintained the UCL SDG website using ReactJS and Node.js. What were the key considerations for ensuring the website met client requirements?
+   - Can you detail your process for deploying a web application to Azure, as mentioned in your UCL Course Project Showcase?
+
+6. **Data Science and Analytics:**
+   - Describe a project where you used machine learning techniques with tools like KNIME or R. What was the business problem you were solving, and what were the results?
+
+### Behavioral Questions:
+1. **Leadership and Team Collaboration:**
+   - As a team leader at Microsoft - NHS, how did you manage and coordinate the team to complete three applications in three months? What strategies did you use to handle any conflicts or issues that arose?
+   - In your role as a data science intern at Advant Analytics Tactics Ltd, how did you collaborate with other interns and junior managers to pitch business analytics service proposals? Can you describe the impact of your work?
+
+2. **Adaptability and Learning:**
+   - Can you describe a time when you had to quickly learn a new technology or tool for a project? How did you approach this learning curve?
+   - During your time at UCL, you led a team with no prior experience in React apps to complete a project within 12 weeks. How did you ensure that the team was able to deliver high-quality results on time?
+
+3. **Problem-Solving:**
+   - Describe a particularly challenging technical problem you encountered in one of your projects (e.g., during your work at Cadent Gas Ltd or UCL Computer Science). How did you approach solving it?
+   - Can you provide an example of a time when you had to debug a difficult issue in a web application? What steps did you take to identify and resolve the problem?
+
+### Scenario-Based Questions:
+1. **Scenario:**
+   - Imagine you are tasked with integrating a new feature into an existing internal web application at Cadent Gas Ltd. This feature requires significant changes to the database schema. How would you plan and execute this integration to minimize disruption to the current users?
+
+2. **Scenario:**
+   - You have been asked to develop a new application using PowerApps for NHS England. The application needs to integrate with existing systems that use JavaScript and MySQL. How would you approach this project, and what steps would you take to ensure successful integration?
+
+These questions are designed to assess both the technical skills and soft skills of the candidate, ensuring a comprehensive evaluation of their capabilities and experiences.
